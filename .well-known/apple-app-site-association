@@ -1,0 +1,12 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["QVW3982SJZ.io.github.chipfiregame.chipfire"],
+        "components": [
+          { "/": "/play*", "comment": "Shared Chip Fire boards and daily scorecards open in the app" }
+        ]
+      }
+    ]
+  }
+}
