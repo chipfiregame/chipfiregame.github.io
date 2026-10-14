@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chip Fire · a shared puzzle</title>
+<meta name="description" content="A Chip Fire board or daily scorecard, shared by a friend.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%235ee8a6'/%3E%3Ccircle cx='32' cy='32' r='17' fill='none' stroke='%231a1033' stroke-width='4'/%3E%3C/svg%3E">
+<!-- Share links from the game look like https://chipfiregame.github.io/play#<code>.
+     With Chip Fire installed on an iPhone, iOS opens the app instead of this page (see .well-known/apple-app-site-association).
+     Otherwise this page shows the code and how to play it. No scripts or requests beyond this file. -->
+<style>
+  :root{
+    --void:#0b0822; --void2:#1a0f3c; --ink:#f4f1ff; --muted:#a9a2d2; --line:rgba(255,255,255,.13); --glass:rgba(255,255,255,.06);
+    --gold:#ffc070; --coral:#f07a22; --mint:#5ee8a6;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;color:var(--ink);font:16px/1.6 var(--sans);background:
+    radial-gradient(90% 60% at 15% 0%, rgba(138,124,255,.28), transparent 60%),
+    radial-gradient(70% 50% at 100% 30%, rgba(255,95,150,.14), transparent 60%),
+    linear-gradient(180deg, var(--void2), var(--void) 55%);min-height:100vh}
+  html{background:var(--void)}
+  a{color:var(--gold)}
+  .wrap{max-width:560px;margin:0 auto;padding:0 20px 40px}
+  header.top{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+  .brand{font-weight:800;letter-spacing:-.02em;font-size:20px;text-decoration:none;color:var(--ink)}
+  .brand span{background:linear-gradient(90deg,#ff9a5a,#ff5f9a);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .card{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:26px 22px 22px;margin-top:18px;text-align:center}
+  .kicker{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  h1{font-size:clamp(28px,7vw,38px);line-height:1.1;letter-spacing:-.03em;margin:8px 0 10px}
+  .score{font:800 44px/1 ui-monospace,Menlo,monospace;color:var(--mint);margin:6px 0 10px}
+  .sub{color:#ddd8ff;margin:0 0 20px}
+  .btn{display:block;padding:14px 18px;border-radius:14px;background:linear-gradient(135deg,#ffe0b0,var(--gold) 45%,var(--coral));color:#2a1200;font-weight:700;text-decoration:none;margin:0 0 10px}
+  .ghost{display:block;padding:12px 18px;border-radius:14px;border:1px solid var(--line);color:var(--ink);text-decoration:none;background:rgba(0,0,0,.2)}
+  .badge{display:inline-flex;gap:8px;align-items:center;padding:10px 16px;border-radius:999px;border:1px solid var(--line);background:var(--glass);font-size:14px}
+  .badge i{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 10px var(--mint)}
+  .codebox{display:flex;gap:8px;margin:22px 0 8px}
+  .codebox code{flex:1;min-width:0;overflow-wrap:anywhere;text-align:left;font:14px/1.4 ui-monospace,Menlo,monospace;padding:12px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.3)}
+  .codebox button{font:inherit;font-weight:700;color:var(--ink);background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:0 16px;cursor:pointer}
+  .how{color:var(--muted);font-size:14px;margin:8px 0 0}
+  footer{color:var(--muted);font-size:14px;text-align:center;margin-top:28px}
+  footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><a class="brand" href="./">Chip <span>Fire</span></a></header>
+
+  <div class="card" id="shared" hidden>
+    <span class="kicker" id="kicker">Shared puzzle</span>
+    <h1 id="title">A friend sent you a puzzle</h1>
+    <div class="score" id="score" hidden></div>
+    <p class="sub" id="sub"></p>
+    <a class="btn" id="open" href="#">Open in Chip Fire</a>
+    <a class="ghost" id="store" href="#" hidden>Get Chip Fire on the App Store</a>
+    <span class="badge" id="soon"><i></i>Coming soon to the App Store</span>
+    <div class="codebox"><code id="code"></code><button id="copy" type="button">Copy</button></div>
+    <p class="how">In Chip Fire, open <b>Records &amp; options</b>, paste the code and tap <b>Play it</b>.</p>
+  </div>
+
+  <div class="card" id="none" hidden>
+    <span class="kicker">Chip Fire</span>
+    <h1>Shared puzzles open here</h1>
+    <p class="sub">When a friend sends you a Chip Fire board or daily scorecard, its link opens this page, or the game itself if it is on your phone.</p>
+    <a class="btn" href="./">About Chip Fire</a>
+  </div>
+
+  <footer><a href="./">Chip Fire</a> · <a href="privacy.html">Privacy policy</a></footer>
+</div>
+<script>
+(function(){
+  // Set this to the App Store link once Chip Fire is live, e.g. 'https://apps.apple.com/app/id1234567890'.
+  var APP_STORE_URL = '';
+  var $ = function(id){ return document.getElementById(id); };
+  var code = '';
+  try { code = decodeURIComponent((location.hash || '').slice(1)).trim(); } catch (e) {}
+  var MODES = { 0:'Integers', 2:'mod 2', 3:'mod 3', 5:'mod 5', 7:'mod 7' };
+  var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var d = code.match(/^d([02357])?-(20\d{6})-(\d{1,5})-([0-3]{3})(?:-([A-Za-z0-9]{1,12}))?$/i);
+  var b = code.match(/^b1\.(?:([A-Za-z0-9]{1,12})\.)?[A-Za-z0-9_-]{8,}$/);
+  if (!d && !b) { $('none').hidden = false; return; }
+  $('shared').hidden = false;
+  $('code').textContent = code;
+  $('open').href = 'chipfire://play#' + encodeURIComponent(code);
+  if (APP_STORE_URL) { $('store').href = APP_STORE_URL; $('store').hidden = false; $('soon').hidden = true; }
+  if (d) {
+    var mode = MODES[d[1] == null ? 5 : +d[1]], ds = d[2], stars = d[4].split('').reduce(function(a, c){ return a + +c; }, 0);
+    var day = MONTHS[+ds.slice(4, 6) - 1] + ' ' + (+ds.slice(6, 8));
+    $('kicker').textContent = 'Daily puzzle · ' + mode + ' · ' + day;
+    $('title').textContent = (d[5] || 'A friend') + ' sent you a scorecard';
+    $('score').textContent = (+d[3]).toLocaleString('en-US'); $('score').hidden = false;
+    $('sub').textContent = 'Their score, with ' + stars + ' of 9 stars. Play the same 3 boards in Chip Fire and compare, graph by graph.';
+  } else {
+    $('kicker').textContent = 'Shared board';
+    $('title').textContent = b[1] ? b[1] + ' sent you a board' : 'A Chip Fire board to play';
+    $('sub').textContent = 'Can you clear it in as few moves as possible?';
+  }
+  $('copy').onclick = function(){
+    var done = function(){ $('copy').textContent = 'Copied'; };
+    if (navigator.clipboard) navigator.clipboard.writeText(code).then(done, function(){});
+  };
+})();
+</script>
+</body>
+</html>
